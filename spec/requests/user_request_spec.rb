@@ -24,9 +24,22 @@ RSpec.describe "Users", type: :request do
 
       it 'returns only the users for the specified company' do
         get company_users_path(company_1)
-        
+
         expect(result.size).to eq(company_1.users.size)
         expect(result.map { |element| element['id'] } ).to eq(company_1.users.ids)
+      end
+    end
+
+    context 'when partially matching usernames' do
+      let!(:user_1) { create(:user, username: "max")}
+      let!(:user_2) { create(:user, username: "matthews")}
+      let!(:user_3) { create(:user, username: "guillaume")}
+
+      it 'returns only users that contains "ma"' do
+        get users_path(username: "ma")
+
+        expect(result.size).to eq(2)
+        expect(result.pluck("username")).to eq([user_1.username, user_2.username])
       end
     end
 
